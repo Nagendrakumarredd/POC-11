@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build Push and Update Manifest
 
 on:
   push:
@@ -6,8 +6,11 @@ on:
       - main
 
 jobs:
-  docker:
+  build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -21,8 +24,20 @@ jobs:
 
       - name: Build Image
         run: |
-          docker build -t syamalanagendrakumarreddy/voting-app:latest .
+          docker build -t syamalanagendrakumarreddy/voting-app:${{ github.run_number }} .
 
       - name: Push Image
         run: |
-          docker push syamalanagendrakumarreddy/voting-app:latest
+          docker push syamalanagendrakumarreddy/voting-app:${{ github.run_number }}
+
+      - name: Update Deployment Manifest
+        run: |
+          sed -i 's|image: .*|image: syamalanagendrakumarreddy/voting-app:${{ github.run_number }}|g' k8s/deployment.yaml
+
+      - name: Commit Manifest Changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add k8s/deployment.yaml
+          git commit -m "Update image tag to ${{ github.run_number }}" || exit 0
+          git push
