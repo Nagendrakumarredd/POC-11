@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "Voting App v1 deployed via GitOps!"
+    return "Voting App v2 deployed via GitOps!"
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
