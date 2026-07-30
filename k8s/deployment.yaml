@@ -16,7 +16,5 @@ spec:
       - name: voting-app
         image: syamalanagendrakumarreddy/voting-app:latest
         imagePullPolicy: Always
-
         ports:
         - containerPort: 5000
-
